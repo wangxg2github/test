@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resource/image/Color_Classic.png</file>
+        <file>resource/image/fontawesome-webfont.ttf</file>
+        <file>resource/image/main_about.png</file>
+        <file>resource/image/main_company.png</file>
+        <file>resource/image/main_config.png</file>
+        <file>resource/image/main_data.png</file>
+        <file>resource/image/main_exit.png</file>
+        <file>resource/image/main_help.png</file>
+        <file>resource/image/main_main.png</file>
+        <file>resource/image/main_person.png</file>
+        <file>resource/image/main_close.png</file>
+        <file>resource/image/main_min.png</file>
+    </qresource>
+</RCC>
