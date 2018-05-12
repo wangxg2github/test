@@ -576,7 +576,7 @@ void mainWidget::on_toolBtnAll_clicked()
         m_mainWidgetUI->stackedWidget->setCurrentIndex(0);
         //m_mainWidgetUI->stackedWidget->show();
     }
-    else if (name == "系统设置")
+    else if (name == "分站管理")
     {
         m_mainWidgetUI->stackedWidget->setCurrentIndex(1);
         m_mainWidgetUI->widget_2->setVisible(false);
@@ -587,7 +587,17 @@ void mainWidget::on_toolBtnAll_clicked()
     {
         m_mainWidgetUI->stackedWidget->setCurrentIndex(2);
 
-        queryDataFromDB();
+        //queryDataFromDB();
+    }
+    else if (name == "报表输出")
+    {
+        reportForms report(m_mysqlDB);
+        if(QDialog::Accepted == report.exec())
+        {
+            cout << "accept";
+            QMessageBox::information(this, "报表打印", "报表打印成功！", QMessageBox::Accepted);
+
+        }
     }
     else if (name == "退出系统")
     {

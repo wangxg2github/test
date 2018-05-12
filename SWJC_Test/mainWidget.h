@@ -18,6 +18,7 @@
 #include "common/ExcelBase.h"
 #include "module/serialPort/comObject.h"
 #include "equipmentDialog.h"
+#include "reportForms.h"
 
 namespace Ui {
 class mainWidget;

@@ -126,7 +126,7 @@
             </size>
            </property>
            <property name="text">
-            <string>系统设置</string>
+            <string>分站管理</string>
            </property>
            <property name="icon">
             <iconset resource="image.qrc">
@@ -151,6 +151,26 @@
            <property name="icon">
             <iconset resource="image.qrc">
              <normaloff>:/resource/image/main_data.png</normaloff>:/resource/image/main_data.png</iconset>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolBtn_reportForms">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>报表输出</string>
+           </property>
+           <property name="icon">
+            <iconset resource="image.qrc">
+             <normaloff>:/resource/image/main_help.png</normaloff>:/resource/image/main_help.png</iconset>
            </property>
            <property name="toolButtonStyle">
             <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -285,7 +305,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page_Main">
       <layout class="QHBoxLayout" name="horizontalLayout_6">

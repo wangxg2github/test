@@ -35,7 +35,9 @@ SOURCES += main.cpp \
     module/serialPort/comObject.cpp \
     module/serialPort/qextserialbase.cpp \
     module/serialPort/win_qextserialport.cpp \
-    equipmentDialog.cpp
+    equipmentDialog.cpp \
+    reportForms.cpp \
+    common/qword.cpp
 
 HEADERS  += \
     mainWidget.h \
@@ -49,11 +51,14 @@ HEADERS  += \
     module/serialPort/qextserialbase.h \
     module/serialPort/win_qextserialport.h \
     equipmentDialog.h \
-    common/commdata.h
+    common/commdata.h \
+    reportForms.h \
+    common/qword.h
 
 FORMS    += \
     mainWidget.ui \
-    equipmentDialog.ui
+    equipmentDialog.ui \
+    reportForms.ui
 
 RESOURCES += \
     image.qrc \
