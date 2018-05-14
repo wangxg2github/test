@@ -97,13 +97,13 @@ where  a.report_time>'20180426170000' and a.report_time < ''
 
 
 insert cdr_data(site_number, report_time, deepness, temperature, battery_level)
-values('DF00000007', '1804261800', 23.33, 23.22, 81);
+values('DF00000006', '1804261800', 23.33, 23.22, 81);
 
 insert cdr_data(site_number, report_time, deepness, temperature, battery_level)
-values('DF00000007', '1804261900', 23.33, 23.22, 81);
+values('DF00000006', '1804261900', 23.33, 23.22, 81);
 
 insert cdr_data(site_number, report_time, deepness, temperature, battery_level)
-values('DF00000007', '1804261100', 23.33, 23.22, 81);
+values('DF00000006', '1804261100', 23.33, 23.22, 81);
 
 insert cdr_data(site_number, report_time, deepness, temperature, battery_level)
 values('DF00000006', '1804261300', 23.33, 23.22, 81);

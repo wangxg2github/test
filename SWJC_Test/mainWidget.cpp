@@ -445,7 +445,7 @@ void mainWidget::settingInit()
 
                 if(-1 == m_mysqlDB->sql_exec(strSql.toUtf8().data()))
                 {
-                    QMessageBox::critical(this, "错误", "修改数据失败！", QMessageBox::Yes, QMessageBox::Yes);
+                    QMessageBox::critical(NULL, "错误", "修改数据失败！", QMessageBox::Yes, QMessageBox::Yes);
                 }
                 else
                 {
@@ -469,6 +469,17 @@ void mainWidget::settingInit()
 
     connect(m_mainWidgetUI->comBo_holeNumber, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
           [=](int index)
+    {
+        Q_UNUSED(index);
+        m_tableViewQueryDataIsShow = false;
+    });
+    connect(m_mainWidgetUI->dateTimeEdit_start, &QDateTimeEdit::dateTimeChanged, this,
+            [=]()
+    {
+        m_tableViewQueryDataIsShow = false;
+    });
+    connect(m_mainWidgetUI->dateTimeEdit_end, &QDateTimeEdit::dateTimeChanged, this,
+            [=]()
     {
         m_tableViewQueryDataIsShow = false;
     });
@@ -524,6 +535,12 @@ void mainWidget::queryDataFromDB()
 {
     if (false == m_tableViewQueryDataIsShow)
     {
+
+        if(0 >= m_mainWidgetUI->dateTimeEdit_start->dateTime().secsTo(m_mainWidgetUI->dateTimeEdit_end->dateTime()))
+        {
+            QMessageBox::warning(this, "告警", "开始时间不可以大于结束时间", QMessageBox::Yes);
+            return;
+        }
         m_queryDatas.clear();
         m_tableViewQueryDataIsShow = true;
 

@@ -4,9 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml charts
-CONFIG += qaxcontainer
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core gui xml charts axcontainer charts
+#CONFIG += qaxcontainer
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 TARGET      = SWJC_Test
 TEMPLATE    = app
@@ -37,7 +37,8 @@ SOURCES += main.cpp \
     module/serialPort/win_qextserialport.cpp \
     equipmentDialog.cpp \
     reportForms.cpp \
-    common/qword.cpp
+    common/qword.cpp \
+    common/qcustomplot.cpp
 
 HEADERS  += \
     mainWidget.h \
@@ -53,7 +54,8 @@ HEADERS  += \
     equipmentDialog.h \
     common/commdata.h \
     reportForms.h \
-    common/qword.h
+    common/qword.h \
+    common/qcustomplot.h
 
 FORMS    += \
     mainWidget.ui \

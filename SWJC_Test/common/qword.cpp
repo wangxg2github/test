@@ -224,7 +224,7 @@ void QWord::getUsedRange(int *topLeftRow, int *topLeftColumn, int *bottomRightRo
     QAxObject *columns = range->querySubObject("Columns");
     *bottomRightColumn = *topLeftColumn + columns->property("Count").toInt() - 1;
 }
-void QWord::intsertTable(int row,int column)
+void QWord::insertTable(int row,int column)
 {
     QAxObject* tables = m_document->querySubObject("Tables");
     QAxObject* selection = m_word->querySubObject("Selection");

@@ -60,7 +60,7 @@ public:
     void deleteSelectColumn(int column);							//删除指定的列
     void moveForEnd();												//移动选定对象到文档末尾
     void insertCellPic(int row,int column,const QString& picPath);	//单元格插入图片
-    void intsertTable(int row,int column);							//插入一个几行几列表格
+    void insertTable(int row,int column);							//插入一个几行几列表格
     void insertMoveDown();											//插入回车
     void insertText(const QString& text);							//插入文字
     //插入巡检单位  巡检计划 巡检时间 巡 检 人  顺序传参
