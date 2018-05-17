@@ -19,8 +19,8 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QGroupBox" name="groupBox">
@@ -28,37 +28,20 @@
         <string>分站信息</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_20">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_26">
           <property name="text">
-           <string>分站卡号</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="comBo_siteStatus"/>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_29">
-          <property name="text">
-           <string>传感器线长(mm)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_22">
-          <property name="text">
-           <string>传感器校准(m)</string>
+           <string>分站编号</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
          <widget class="QLineEdit" name="lineEdit_siteNumber"/>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_26">
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_20">
           <property name="text">
-           <string>分站编号</string>
+           <string>分站卡号</string>
           </property>
          </widget>
         </item>
@@ -72,8 +55,25 @@
           </property>
          </widget>
         </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="comBo_siteStatus"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_29">
+          <property name="text">
+           <string>传感器线长(mm)</string>
+          </property>
+         </widget>
+        </item>
         <item row="3" column="1">
          <widget class="QLineEdit" name="lineEdit_lineLenght"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_22">
+          <property name="text">
+           <string>传感器校准(m)</string>
+          </property>
+         </widget>
         </item>
         <item row="4" column="1">
          <widget class="QLineEdit" name="lineEdit_calibration"/>
@@ -181,7 +181,7 @@
          </widget>
         </item>
         <item row="6" column="1">
-         <widget class="QComboBox" name="comBo_geological"/>
+         <widget class="QLineEdit" name="lineEdit_geological"/>
         </item>
         <item row="7" column="0">
          <widget class="QLabel" name="label_23">
@@ -198,7 +198,7 @@
      </item>
     </layout>
    </item>
-   <item>
+   <item row="1" column="0">
     <widget class="QWidget" name="widget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">

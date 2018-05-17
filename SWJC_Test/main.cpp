@@ -17,7 +17,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //注册日志接口函数
-    //qInstallMessageHandler(stMessageOutput);
+    qInstallMessageHandler(stMessageOutput);
+
+    g_logger.setLogLevel(LOG_INFO);
 
     //连接数据库
     mymysql mysqlDB;

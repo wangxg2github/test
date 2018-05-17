@@ -9,9 +9,6 @@
 #include <QVariant>
 #include <QAxObject>
 #include <QAxWidget>
-#include <QDebug>
-
-#define cout qDebug() << __FILE__ << ":" << __LINE__ << "--->"
 
 class QWord : public QObject
 {

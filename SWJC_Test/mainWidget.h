@@ -124,6 +124,9 @@ private:
     QStringList m_queryDataHeader;
     void queryDataFromDB();
 
+    QStringList m_holeNumberList;
+    bool m_isShowGroupBox;
+
     //equipment
     bool m_tableViewEquipmentShow;
     QList<QList<QVariant>> m_equipmentDatas;

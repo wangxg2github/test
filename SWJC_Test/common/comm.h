@@ -1,8 +1,11 @@
 #ifndef COMM_H
 #define COMM_H
 #include <QDebug>
+#include <QSettings>
 #include <QCryptographicHash>
+#include <QDebug>
 
+#define cout qDebug() << __FILE__ << ":" << __LINE__ << ">>>"
 
 
 #define RET_OK              -1
@@ -25,8 +28,6 @@ struct serialPortParam
 
 
 
-
-
 #define printLog(logLevel, fmt, args...) \
 {\
     MyHelper::applicationLog(__FILE__, __LINE__, logLevel, fmt, ##args); \
@@ -34,10 +35,21 @@ struct serialPortParam
 
 enum
 {
-    LOG_ERROR = 0x11,
-    LOG_DEBUG = 0x22,
-    LOG_WARN  = 0x33,
-    LOG_INFO  = 0x44
+    LOG_ERROR,
+    LOG_WARN,
+    LOG_INFO,
+    LOG_DEBUG,
+    LOGlEVEL_BUFF
+};
+
+enum
+{
+    SIGNAL_COM_OPEN_OK,
+    SIGNAL_COM_OPEN_ERROR,
+    SIGNAL_AT_CONNECT_OK,
+    SIGNAL_AT_CONNECT_ERROR,
+    SIGNAL_UPDATE_DATA,
+    SIGNAL_AT_BUFF
 };
 
 
@@ -58,6 +70,37 @@ public:
         bb = QCryptographicHash::hash ( pwd.toLatin1(), QCryptographicHash::Md5 );
         return md5.append(bb.toHex());
     }
+
+//    static QString getValueFromSettings(const QString filename, const QString group, const QString key)
+//    {
+//        QString strValue;
+//        QSettings settings = new QSettings(filename, QSettings::IniFormat);
+//        settings.setIniCodec("UTF8");
+
+//        QStringList groupList = settings.allKeys();
+//        foreach (QString strGroup, groupList)
+//        {
+//            if(group == strGroup)
+//            {
+//                foreach (QString strKey, settings.allKeys())
+//                {
+//                    if (key == strKey)
+//                    {
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//        settings.endGroup();
+//        return settings.value(key);
+
+//    }
+
+//    static int getValueFromSettings(const QString filename, const QString group, const QString key, const QString newValue)
+//    {
+
+//        return 0;
+//    }
 
 
     /*******************************************************************************************

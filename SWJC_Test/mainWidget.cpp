@@ -3,12 +3,13 @@
 
 mainWidget::mainWidget(QWidget *parent) :
     QWidget(parent),
-    m_excelExport(NULL),
-    m_comObject(NULL),
-    m_comThread(NULL),
     m_mainWidgetUI(new Ui::mainWidget)
 {
     m_mainWidgetUI->setupUi(this);
+
+    m_excelExport = NULL;
+    m_comThread = NULL;
+    m_comObject = NULL;
 
     QString path = "HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM";
     QSettings *settings = new QSettings(path, QSettings::NativeFormat);
@@ -19,9 +20,10 @@ mainWidget::mainWidget(QWidget *parent) :
     for (int i = 0; i < key.size(); ++i)
     {
         getWinCom(i, "value", comValue);
-        cout << comValue;
         m_mainWidgetUI->comBox_serialPort->addItem(comValue);
     }
+    if(0 != key.size())
+        m_mainWidgetUI->pushBtn_serialPort->setText("开始通信");
 
     m_mainWidgetUI->comBox_baudRate->setCurrentIndex(12);
     m_mainWidgetUI->comBox_Data->setCurrentIndex(3);
@@ -80,8 +82,8 @@ void mainWidget::closeEvent(QCloseEvent *event)
     {
         this->hide();
         m_systemTrayIcon->show();
-        this->m_systemTrayIcon->showMessage(tr("系统正在运行"),
-                                      tr("如果你想关闭系统，请输入密码."));
+        this->m_systemTrayIcon->showMessage(tr("系统状态"),
+                                      tr("系统正在后台运行。"));
         event->ignore();
     }
     else
@@ -174,7 +176,7 @@ void mainWidget::on_getWidgetTraySignal(QSystemTrayIcon::ActivationReason reason
     if (QSystemTrayIcon::DoubleClick == reason)
     {
         m_systemTrayIcon->hide();
-        this->showNormal();
+        this->showMaximized();
     }
     return;
 }
@@ -185,7 +187,7 @@ void mainWidget::mainWidgetInit()
     //this->resize(800, 600);
     this->showMaximized();
     this->setProperty("canMoveAndMax", true);
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint /* | Qt::WindowMinMaxButtonsHint*/);
 
     m_mainWidgetUI->lab_Name->setText("水文监测系统");
     m_mainWidgetUI->lab_Name->setFont(QFont("Microsoft Yahei", 20));
@@ -195,6 +197,7 @@ void mainWidget::mainWidgetInit()
 
     //安装事件过滤器
     m_mainWidgetUI->widgetTitle->installEventFilter(this);
+    //this->installEventFilter(this);
 
     //设置顶部导航按钮
     QSize icoSize(25, 25);
@@ -227,7 +230,7 @@ void mainWidget::systemTrayInit()
     connect(m_actionShowWidget, &QAction::triggered,
             [this]()
     {
-        this->showNormal();
+        this->showMaximized();
     });
 
     m_actionExit = new QAction("退出程序", this);
@@ -341,10 +344,11 @@ void mainWidget::settingInit()
             showData(m_mainWidgetUI->tableView_equipment, m_myModelEquipmentData, &m_equipmentDatas, m_equipmentDataHeader, strSql);
 
             //隐藏某一列数据
-            m_mainWidgetUI->tableView_equipment->hideColumn(1);
-            m_mainWidgetUI->tableView_equipment->hideColumn(2);
-            m_mainWidgetUI->tableView_equipment->hideColumn(3);
-            m_mainWidgetUI->tableView_equipment->hideColumn(12);
+//            m_mainWidgetUI->tableView_equipment->hideColumn(1);
+//            m_mainWidgetUI->tableView_equipment->hideColumn(2);
+//            m_mainWidgetUI->tableView_equipment->hideColumn(3);
+//            m_mainWidgetUI->tableView_equipment->hideColumn(12);
+            m_mainWidgetUI->tableView_equipment->setColumnWidth(13, 350);
             return;
         }
     });
@@ -358,11 +362,10 @@ void mainWidget::settingInit()
         {
             QStringList strListData = dlg.getData();
 
-            QString strSql;
-            strSql = QString("insert cdr_site_info(hole_number, hole_coordinate_X, hole_coordinate_Y, hole_coordinate_Z,\
+            QString strSql = QString("insert cdr_site_info(hole_number, hole_coordinate_X, hole_coordinate_Y, hole_coordinate_Z,\
                              hole_elevation, hole_depth, geological, water_elevation, \
                              site_number, site_phone, site_status, line_lenght, calibration, location) \
-             values('%1', '%2',  '%3', '%4', %5, %6,  '%7', %9, '%10', '%11', '%12', %13, %14, \ '%15');").arg(strListData.at(0)).arg(strListData.at(1)).arg(strListData.at(2)).arg(strListData.at(3)).arg(strListData.at(4)).arg(strListData.at(5)).arg(strListData.at(6)).arg(strListData.at(7)).arg(strListData.at(8)).arg(strListData.at(9)).arg(strListData.at(10)).arg(strListData.at(11)).arg(strListData.at(12)).arg(strListData.at(13));
+             values('%1', '%2',  '%3', '%4', %5, %6,  '%7', %9, '%10', '%11', '%12', %13, %14, '%15');").arg(strListData.at(0)).arg(strListData.at(1)).arg(strListData.at(2)).arg(strListData.at(3)).arg(strListData.at(4)).arg(strListData.at(5)).arg(strListData.at(6)).arg(strListData.at(7)).arg(strListData.at(8)).arg(strListData.at(9)).arg(strListData.at(10)).arg(strListData.at(11)).arg(strListData.at(12)).arg(strListData.at(13));
 
             if (-1 == m_mysqlDB->sql_exec(strSql.toUtf8().data()))
             {
@@ -425,6 +428,7 @@ void mainWidget::settingInit()
             {
                 dataList << dataRow.at(i).toString();
             }
+            cout << dataList;
 
             equipmentDialog dlg(false);
             dlg.setData(dataList);
@@ -439,9 +443,9 @@ void mainWidget::settingInit()
                 {
                     dataRow.append(dataList.at(index));
                 }
-                //cout << "outData:" << dataList;
+                cout << "outData:" << dataList;
 
-                QString strSql = QString("update cdr_site_info set hole_coordinate_X='%1', hole_coordinate_Y='%2', hole_coordinate_Z='%3', hole_elevation=%4 , hole_depth=%5 , geological='%6', water_elevation=%7 , site_number= '%8', site_phone= '%9', site_status= '%10',\ line_lenght= %11, calibration= %12, location='%13' where hole_number='%14';").arg(dataList.at(1)).arg(dataList.at(2)).arg(dataList.at(3)).arg(dataList.at(4).toFloat()).arg(dataList.at(5).toFloat()).arg(dataList.at(6)).arg(dataList.at(7).toFloat()).arg(dataList.at(8)).arg(dataList.at(9)).arg(dataList.at(10)).arg(dataList.at(11).toFloat()).arg(dataList.at(12).toFloat()).arg(dataList.at(13)).arg(dataList.at(0));
+                QString strSql = QString("update cdr_site_info set hole_coordinate_X='%1', hole_coordinate_Y='%2', hole_coordinate_Z='%3', hole_elevation=%4 , hole_depth=%5 , geological='%6', water_elevation=%7 , site_number= '%8', site_phone= '%9', site_status= '%10', line_lenght= %11, calibration= %12, location='%13' where hole_number='%14';").arg(dataList.at(1)).arg(dataList.at(2)).arg(dataList.at(3)).arg(dataList.at(4).toFloat()).arg(dataList.at(5).toFloat()).arg(dataList.at(6)).arg(dataList.at(7).toFloat()).arg(dataList.at(8)).arg(dataList.at(9)).arg(dataList.at(10)).arg(dataList.at(11).toFloat()).arg(dataList.at(12).toFloat()).arg(dataList.at(13)).arg(dataList.at(0));
 
                 if(-1 == m_mysqlDB->sql_exec(strSql.toUtf8().data()))
                 {
@@ -458,14 +462,16 @@ void mainWidget::settingInit()
     });
 
 
+    //历史数据查询
+    m_isShowGroupBox = false;
     m_mainWidgetUI->dateTimeEdit_start->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
     m_mainWidgetUI->dateTimeEdit_end->setDisplayFormat("yyyy/MM/dd HH:mm:ss");
 
     m_mainWidgetUI->dateTimeEdit_start->setDateTime(QDateTime::currentDateTime().addDays(-30));
     m_mainWidgetUI->dateTimeEdit_end->setDateTime(QDateTime::currentDateTime());
 
-    m_mainWidgetUI->dateTimeEdit_start->setCalendarPopup(true);
-    m_mainWidgetUI->dateTimeEdit_end->setCalendarPopup(true);
+//    m_mainWidgetUI->dateTimeEdit_start->setCalendarPopup(true);
+//    m_mainWidgetUI->dateTimeEdit_end->setCalendarPopup(true);
 
     connect(m_mainWidgetUI->comBo_holeNumber, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
           [=](int index)
@@ -483,12 +489,30 @@ void mainWidget::settingInit()
     {
         m_tableViewQueryDataIsShow = false;
     });
+    connect(m_mainWidgetUI->pushBtn_show, &QPushButton::clicked, this,
+            [=]()
+    {
+        if(m_isShowGroupBox)
+        {
+            m_isShowGroupBox = false;
+            m_mainWidgetUI->groupBox_2->setVisible(false);
+            m_mainWidgetUI->pushBtn_show->setText("<");
+        }
+        else
+        {
+            m_isShowGroupBox = true;
+            m_mainWidgetUI->groupBox_2->setVisible(true);
+            m_mainWidgetUI->pushBtn_show->setText(">");
+        }
+
+    });
     connect(m_mainWidgetUI->pushBtn_search, &QPushButton::clicked, this,
             [=]()
     {
         queryDataFromDB();
         //m_myModelQueryData->upData();
     });
+
 
 
 }
@@ -513,6 +537,54 @@ void mainWidget::threadStart()
     connect(m_comThread, &QThread::finished, m_comThread, &QThread::deleteLater);
 
     //connect(m_mainWidgetUI->pushBtn_serialPort, &QPushButton::clicked, m_comObject, &comObject::on_slot_sendAT);
+    connect(m_comObject, &comObject::signalString, this,
+            [=](int index)
+    {
+        switch (index)
+        {
+        case SIGNAL_COM_OPEN_OK:
+
+            break;
+
+        case SIGNAL_COM_OPEN_ERROR:
+            threadDestroy();
+            m_mainWidgetUI->pushBtn_serialPort->setText("开始通信");
+            QMessageBox::critical(NULL, "错误", "打开串口失败！", QMessageBox::Yes);
+            break;
+        case SIGNAL_AT_CONNECT_OK:
+            m_mainWidgetUI->pushBtn_serialPort->setText("正在通信");
+            break;
+        case SIGNAL_AT_CONNECT_ERROR:
+            threadDestroy();
+            m_mainWidgetUI->pushBtn_serialPort->setText("开始通信");
+            QMessageBox::critical(NULL, "错误", "设备连接异常！", QMessageBox::Yes);
+            break;
+        case SIGNAL_UPDATE_DATA:
+            m_realTimeDatas.clear();
+            QString strSql = "select a.hole_number, a.hole_elevation, a.geological, a.report_time, a.deepness,\
+                              a.hole_elevation-a.deepness as shuiWei,\
+                              a.temperature, a.battery_level, a.site_number, a.site_phone, a.site_status \
+                              from cdr_data_full as a \
+                              inner join \
+                              ( \
+                                  select site_number, max(report_time) 'maxReport_time' \
+                                  from cdr_data_full  \
+                                  group by site_number \
+                              ) b \
+                              on a.site_number=b.site_number and a.report_time=b.maxReport_time;";
+
+            if (NULL == m_mymodelRealTimeData)
+            {
+                m_mymodelRealTimeData = new QMyModel(this);
+            }
+            showData(m_mainWidgetUI->tableView_realTimeData, m_mymodelRealTimeData, &m_realTimeDatas, m_realTimeDataHeader, strSql);
+
+            m_mainWidgetUI->tableView_realTimeData->setColumnWidth(3, 140);
+            m_mainWidgetUI->tableView_realTimeData->setColumnWidth(10, 130);
+            break;
+
+        }
+    });
 
     m_comThread->start();
 }
@@ -529,6 +601,9 @@ void mainWidget::threadDestroy()
         m_comThread->quit();
     }
     m_comThread->wait();
+    m_comThread = NULL;
+    m_comObject = NULL;
+
 }
 
 void mainWidget::queryDataFromDB()
@@ -565,7 +640,44 @@ void mainWidget::queryDataFromDB()
             m_myModelQueryData = new QMyModel(this);
         }
         showData(m_mainWidgetUI->tableView_query, m_myModelQueryData, &m_queryDatas, m_queryDataHeader, strSql);
+        m_mainWidgetUI->tableView_query->setColumnWidth(2, 140);
+        m_mainWidgetUI->tableView_query->setColumnWidth(10, 250);
 
+        //max, min, avg
+        strSql.clear();
+        strSql = QString("select max(deepness), max(hole_elevation-deepness), max(temperature), min(deepness), min(hole_elevation-deepness), min(temperature), round(avg(deepness), 3), round(avg(hole_elevation-deepness), 3), round(avg(temperature), 3),  min(battery_level) from cdr_data_full  where report_time>'%1' and report_time < '%2' ").arg(strQueryDateTimeStart).arg(strQueryDateTimeEnd);
+        if (0 != m_mainWidgetUI->comBo_holeNumber->currentText().compare("全部"))
+        {
+            strSql += QString("and hole_number='%1'").arg(m_mainWidgetUI->comBo_holeNumber->currentText());
+        }
+
+        QList<QList<QVariant>> datas;
+        if (-1 == m_mysqlDB->sql_open(strSql.toLatin1().data(), datas))
+        {
+            printLog(LOG_ERROR, "Query data from mysql failed! strSql:%s", strSql.toLatin1().data());
+            return;
+        }
+        if (1 == datas.size() && 10 == datas.at(0).size())
+        {
+            QList<QVariant> dataTmp = datas.at(0);
+            m_mainWidgetUI->lineEdit_maxDeepness->setText(dataTmp.at(0).toString());
+            m_mainWidgetUI->lineEdit_maxWater->setText(dataTmp.at(1).toString());
+            m_mainWidgetUI->lineEdit_maxTemperature->setText(dataTmp.at(2).toString());
+
+            m_mainWidgetUI->lineEdit_minDeepness->setText(dataTmp.at(3).toString());
+            m_mainWidgetUI->lineEdit_minWater->setText(dataTmp.at(4).toString());
+            m_mainWidgetUI->lineEdit_minTemperature_2->setText(dataTmp.at(5).toString());
+
+            m_mainWidgetUI->lineEdit_avgDeepness->setText(dataTmp.at(6).toString());
+            m_mainWidgetUI->lineEdit_avgWater->setText(dataTmp.at(7).toString());
+            m_mainWidgetUI->lineEdit_avgTemperature->setText(dataTmp.at(8).toString());
+
+            m_mainWidgetUI->lineEdit_minBatty->setText(dataTmp.at(9).toString());
+
+            m_mainWidgetUI->pushBtn_show->setText(">");
+            m_mainWidgetUI->groupBox_2->setVisible(true);
+            m_isShowGroupBox = true;
+        }
     }
     return;
 }
@@ -603,7 +715,26 @@ void mainWidget::on_toolBtnAll_clicked()
     else if (name == "数据查询")
     {
         m_mainWidgetUI->stackedWidget->setCurrentIndex(2);
+        m_mainWidgetUI->groupBox_2->setVisible(false);
 
+        if (m_holeNumberList.isEmpty())
+        {
+            QList<QList<QVariant>> datas;
+            QString strSql = "select hole_number from cdr_site_info;";
+            if (-1 == m_mysqlDB->sql_open(strSql.toLatin1().data(), datas))
+            {
+                printLog(LOG_ERROR, "Query data from mysql failed! strSql:%s", strSql.toLatin1().data());
+                return;
+            }
+
+            int iRowCount = datas.size();
+            for(int i = 0; i < iRowCount; ++i)
+            {
+                m_holeNumberList.append(datas.at(i).at(0).toString());
+            }
+
+            m_mainWidgetUI->comBo_holeNumber->addItems(m_holeNumberList);
+        }
         //queryDataFromDB();
     }
     else if (name == "报表输出")
@@ -780,33 +911,51 @@ void mainWidget::showData(QTableView *tableView, QMyModel *myModel, QList<QList<
 
 void mainWidget::on_pushBtn_serialPort_clicked()
 {
-
     if (m_mainWidgetUI->pushBtn_serialPort->text() == "开始通信")
     {
-        threadStart();
-        m_mainWidgetUI->pushBtn_serialPort->setText("正在通信");
+        //校验COM口
+        QString path = "HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM";
+        QSettings *settings = new QSettings(path, QSettings::NativeFormat);
+        QStringList key = settings->allKeys();
+        QString comValue ;
+        for (int i = 0; i < key.size(); ++i)
+        {
+            getWinCom(i, "value", comValue);
+            if (comValue == m_mainWidgetUI->comBox_serialPort->currentText())
+            {
+                threadStart();
+                return;
+            }
+        }
+        m_mainWidgetUI->comBox_serialPort->clear();
+        m_mainWidgetUI->pushBtn_serialPort->setText("查找COM口");
+        QMessageBox::about(NULL, "提醒", "COM口无效，请检查COM！");
     }
-
-
-
-    QString strSql = "select a.hole_number, a.hole_elevation, a.geological, a.report_time, a.deepness,\
-                      a.hole_elevation-a.deepness as shuiWei,\
-                      a.temperature, a.battery_level, a.site_number, a.site_phone, a.site_status \
-                      from cdr_data_full as a \
-                      inner join \
-                      ( \
-                          select site_number, max(report_time) 'maxReport_time' \
-                          from cdr_data_full  \
-                          group by site_number \
-                      ) b \
-                      on a.site_number=b.site_number and a.report_time=b.maxReport_time;";
-
-    if (NULL == m_mymodelRealTimeData)
+    else if (m_mainWidgetUI->pushBtn_serialPort->text() == "查找COM口")
     {
-        m_mymodelRealTimeData = new QMyModel(this);
+        QString path = "HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM";
+        QSettings *settings = new QSettings(path, QSettings::NativeFormat);
+        QStringList key = settings->allKeys();
+        QString comValue ;
+        for (int i = 0; i < key.size(); ++i)
+        {
+            getWinCom(i, "value", comValue);
+            m_mainWidgetUI->comBox_serialPort->addItem(comValue);
+        }
+        if (0 != key.size())
+        {
+            m_mainWidgetUI->pushBtn_serialPort->setText("开始通信");
+        }
     }
-    showData(m_mainWidgetUI->tableView_realTimeData, m_mymodelRealTimeData, &m_realTimeDatas, m_realTimeDataHeader, strSql);
+    else
+    {
+        if(QMessageBox::Yes == QMessageBox::question(NULL, "提醒", "确定要停止接受数据吗？", QMessageBox::Yes | QMessageBox::No, QMessageBox::No))
+        {
+            threadDestroy();
+            m_mainWidgetUI->pushBtn_serialPort->setText("开始通信");
+        }
 
+    }
     return;
 }
 

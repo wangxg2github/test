@@ -133,7 +133,8 @@ Qt::ItemFlags QMyModel::flags(const QModelIndex &index) const
 
 void QMyModel::insertData(QList<QVariant> dataRow)
 {
-
+    Q_UNUSED(dataRow);
+    return;
 }
 
 

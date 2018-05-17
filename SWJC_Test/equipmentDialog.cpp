@@ -11,6 +11,10 @@ equipmentDialog::equipmentDialog(bool isAdd) :
     m_isAddInfo = isAdd;
     m_isChangeOfControl = false;
 
+    ui->comBo_siteStatus->addItem("使用");
+    ui->comBo_siteStatus->addItem("停用");
+    ui->comBo_siteStatus->addItem("维修");
+
     if (m_isAddInfo)
     {
         this->setWindowTitle("添加分站信息");
@@ -49,7 +53,7 @@ equipmentDialog::equipmentDialog(bool isAdd) :
         ui->lineEdit_holeDepth->setPlaceholderText("eg:1234.123");
         ui->lineEdit_holeDepth->setValidator(pDoubleValidator);
 
-        ui->comBo_geological->addItem("地质");
+        //ui->lineEdit_geological
 
         ui->lineEdit_waterElevation->setPlaceholderText("eg:1234.123");
         ui->lineEdit_waterElevation->setValidator(pDoubleValidator);
@@ -61,9 +65,9 @@ equipmentDialog::equipmentDialog(bool isAdd) :
         ui->lineEdit_sitePhoneNo->setPlaceholderText("eg:18700001111");
         ui->lineEdit_sitePhoneNo->setValidator(pValidator1);
 
-        ui->comBo_siteStatus->addItem("使用");
-        ui->comBo_siteStatus->addItem("停用");
-        ui->comBo_siteStatus->addItem("维修");
+//        ui->comBo_siteStatus->addItem("使用");
+//        ui->comBo_siteStatus->addItem("停用");
+//        ui->comBo_siteStatus->addItem("维修");
 
         ui->lineEdit_lineLenght->setPlaceholderText("eg:1234.123");
         ui->lineEdit_lineLenght->setValidator(pDoubleValidator);
@@ -119,7 +123,7 @@ QStringList equipmentDialog::getData()
     dataList << ui->lineEdit_holeZ->text();
     dataList << ui->lineEdit_holeElevation->text();
     dataList << ui->lineEdit_holeDepth->text();
-    dataList << ui->comBo_geological->currentText();
+    dataList << ui->lineEdit_geological->text();
     dataList << ui->lineEdit_waterElevation->text();
     dataList << ui->lineEdit_siteNumber->text();
     dataList << ui->lineEdit_sitePhoneNo->text();
@@ -140,7 +144,7 @@ void equipmentDialog::setData(QStringList &data)
         ui->lineEdit_holeZ->setText(data.at(3));
         ui->lineEdit_holeElevation->setText(data.at(4));
         ui->lineEdit_holeDepth->setText(data.at(5));
-        ui->comBo_geological->setCurrentText(data.at(6));
+        ui->lineEdit_geological->setText(data.at(6));
         ui->lineEdit_waterElevation->setText(data.at(7));
         ui->lineEdit_siteNumber->setText(data.at(8));
         ui->lineEdit_sitePhoneNo->setText(data.at(9));

@@ -6,7 +6,7 @@ st_logger::st_logger(QObject *parent) :
 {
     m_pLogFile          = NULL;
     m_bUseLogFile       = true;
-    m_nLogLevel         = LOGLEVEL_DEBUG;
+    m_nLogLevel         = LOG_INFO;
     m_nMaxFileSize      = 50*1024*1024; //50M
 }
 
@@ -32,7 +32,7 @@ int st_logger::logLevel() const
 
 void st_logger::setLogLevel(int lv)
 {
-    if (lv >=LOGlEVEL_ERROR && lv <= LOGLEVEL_DEBUG)
+    if (lv >=LOG_ERROR && lv <= LOG_DEBUG)
     {
         m_nLogLevel = lv;
     }

@@ -23,30 +23,48 @@ class comObject : public QObject
         QString strPhoneNum;
         QString strTime;
         QString strSms;
+
+        void clear()
+        {
+            strPhoneNum.clear();
+            strTime.clear();
+            strSms.clear();
+        }
     };
 
     struct SiteDataInfo
     {
         QString strSiteNum;
         QString strTime;
-        int iDepth;
-        int iTemperature;
-        int iBattery;
+        float iDepth;
+        float iTemperature;
+        float iBattery;
+
+        void clear()
+        {
+            strTime.clear();
+            iDepth = 0;
+            iTemperature = 0;
+        }
     };
 
 public:
     comObject(serialPortParam param);
+    ~comObject();
 
     void init();
 
 signals:
+    void signalString(int index);
 
 public slots:
     void on_slot_readMycom();
 
 public:
-    int sendAtCmd(int index);
+    int sendAtCmd(int index, int smsCount = 0);
     void parseDataFromSerialPort();
+    void parseSmsCountFromSerialPort();
+    void parseAllSmsFromSerialPort();
     void parseSmsData();
     void insertDataToMysql();
 private:
@@ -57,8 +75,13 @@ private:
     QTimer *m_timerCom;
 
     QString m_qStrRecvData;
+    QString m_qStrRecvDataAll;
     SmsInfo m_smsInfo;
     SiteDataInfo m_siteData;
+
+    QStringList m_toDeleteIndexList;
+
+    QTimer *m_timerPolling;
 };
 
 #endif // COMOBJECT_H

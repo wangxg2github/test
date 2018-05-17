@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml charts axcontainer charts
+QT       += core gui xml charts axcontainer
 #CONFIG += qaxcontainer
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 

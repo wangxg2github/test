@@ -5,9 +5,6 @@
 #include <QAbstractTableModel>
 #include <QList>
 
-#include <QDebug>
-#define cout qDebug() << "[" << __FILE__ ":" << __LINE__ << "] >>>"
-
 class QMyModel : public QAbstractTableModel
 {
     Q_OBJECT

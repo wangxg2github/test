@@ -7,19 +7,11 @@
 #include <QByteArray>
 #include <QMutex>
 #include <QCoreApplication>
+#include "common/comm.h"
 
 class st_logger : public QObject
 {
     Q_OBJECT
-
-    enum
-    {
-        LOGlEVEL_ERROR,
-        LOGLEVEL_WARNING,
-        LOGLEVEL_INFO,
-        LOGLEVEL_DEBUG,
-        LOGlEVEL_BUFF
-    };
 
 public:
     explicit st_logger(QObject *parent = 0);

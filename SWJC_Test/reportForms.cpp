@@ -15,7 +15,7 @@ reportForms::reportForms(mymysql *mysqlDB) :
     ui->progressBar->setVisible(false);
 
     this->setWindowTitle("报表打印");
-    this->resize(500, 200);
+    this->resize(500, 170);
 
 
     if (NULL == mysqlDB)
@@ -28,8 +28,6 @@ reportForms::reportForms(mymysql *mysqlDB) :
     QString filenameTmp = QApplication::applicationDirPath() + QDateTime::currentDateTime().toString("/yyyyMMddhhmmss");
     filenameOfDeepness = filenameTmp +"_deepness.png";
     filenameOfTemperature = filenameTmp +"_temperature.png";
-
-    cout << filenameOfDeepness << filenameOfTemperature;
 
     QList<QList<QVariant>> datas;
     QString strSql = "select hole_number from cdr_site_info;";
@@ -135,7 +133,7 @@ void reportForms::on_pushBtn_confirm_clicked()
     //报表所有数据
     QString strSql = QString("select report_time, deepness, temperature \
 from cdr_data_full  \
-where hole_number='%1' and report_time like '%2%'order by report_time limit 10;").arg(ui->comBox_holeNumber->currentText()).arg(ui->comBox_reportFormsData->currentText());
+where hole_number='%1' and report_time like '%2%'order by report_time;").arg(ui->comBox_holeNumber->currentText()).arg(ui->comBox_reportFormsData->currentText());
     if(-1 == m_mysqlDB->sql_open(strSql.toLatin1().data(), m_datas))
     {
         printLog(LOG_ERROR, "query data from mysql failed! strSql:%s", strSql.toLatin1().data());
@@ -146,7 +144,7 @@ where hole_number='%1' and report_time like '%2%'order by report_time limit 10;"
 
     //报表平均值/最大值/最小值
     datas.clear();
-    QString strSqlMaxMinAvg = QString("select max(deepness), max(temperature), min(deepness), min(temperature), avg(deepness), avg(temperature), min(battery_level), geological, hole_elevation  from cdr_data_full where hole_number='%1' and report_time like '%2%'").arg(ui->comBox_holeNumber->currentText()).arg(ui->comBox_reportFormsData->currentText());
+    QString strSqlMaxMinAvg = QString("select max(deepness), max(temperature), min(deepness), min(temperature), round(avg(deepness), 3), round(avg(temperature), 3), min(battery_level), geological, hole_elevation  from cdr_data_full where hole_number='%1' and report_time like '%2%'").arg(ui->comBox_holeNumber->currentText()).arg(ui->comBox_reportFormsData->currentText());
     if(-1 == m_mysqlDB->sql_open(strSqlMaxMinAvg.toLatin1().data(), datas))
     {
         printLog(LOG_ERROR, "query data from mysql failed! strSql:%s", strSqlMaxMinAvg.toLatin1().data());
@@ -309,7 +307,7 @@ void reportForms::printReportForms()
 
 
     word.close();
-    cout << "word close.";
+    return;
 }
 
 void reportForms::saveImageOfDeepness()
@@ -361,9 +359,7 @@ void reportForms::saveImageOfDeepness()
     ui->customPlot->xAxis->setTicker(dateTicker);
     ui->customPlot->xAxis->setRange(dateTimeStart.toTime_t(), dateTimeEnd.toTime_t());
     double dTmp = (strMaxDeepness.toDouble() - strMinDeepnees.toDouble()) / 2;
-    cout << strMinDeepnees.toDouble()-dTmp;
-    cout << strMaxDeepness.toDouble()+dTmp;
-    ui->customPlot->yAxis->setRange(strMinDeepnees.toDouble()-10, 100);
+    ui->customPlot->yAxis->setRange(strMinDeepnees.toDouble()-dTmp, strMaxDeepness.toDouble()+dTmp);
 
 
 
@@ -533,7 +529,7 @@ void printFormsThread::run()
 
 }
 
-printFormsThread::printFormsDemo()
+void printFormsThread::printFormsDemo()
 {
     QWord word;
     word.createNewWord(m_filePathOfWord);
@@ -622,5 +618,5 @@ printFormsThread::printFormsDemo()
 
     word.close();
     emit resultReady(100);
-    cout << "word close.";
+    return;
 }

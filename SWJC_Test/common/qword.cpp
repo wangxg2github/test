@@ -293,7 +293,7 @@ void QWord::setTableAutoFitBehavior(int flag)
 {
     QAxObject* selection = m_word->querySubObject("Selection");
     QAxObject* table = selection->querySubObject("Tables(1)");
-    if(0 <= flag & flag <= 2 )
+    if(0 <= flag && flag <= 2 )
         table->dynamicCall("AutoFitBehavior(WdAutoFitBehavior)", flag);
 }
 void QWord::deleteSelectColumn(int column)

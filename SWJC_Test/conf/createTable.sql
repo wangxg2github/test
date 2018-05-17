@@ -5,8 +5,8 @@ create table cdr_data
 	id       		int auto_increment not null primary key, 
 	site_number     varchar(20) not null,
 	report_time   	datetime not null, 
-	deepness 		float(7, 3) not null,
-	temperature 	float(7, 3) not null,
+	deepness 		float(8, 3) not null,
+	temperature 	float(8, 3) not null,
 	battery_level 	int not null
 )default charset=utf8;
 
@@ -97,22 +97,48 @@ where  a.report_time>'20180426170000' and a.report_time < ''
 
 
 insert cdr_data(site_number, report_time, deepness, temperature, battery_level)
-values('DF00000006', '1804261800', 23.33, 23.22, 81);
+values('DF00000006', '1804011800', 23.33, 23.22, 81);
 
 insert cdr_data(site_number, report_time, deepness, temperature, battery_level)
-values('DF00000006', '1804261900', 23.33, 23.22, 81);
+values('DF00000006', '1804031900', 34.33, 23.22, 81);
 
 insert cdr_data(site_number, report_time, deepness, temperature, battery_level)
-values('DF00000006', '1804261100', 23.33, 23.22, 81);
+values('DF00000006', '1804051100', 44.33, 23.22, 81);
 
 insert cdr_data(site_number, report_time, deepness, temperature, battery_level)
-values('DF00000006', '1804261300', 23.33, 23.22, 81);
+values('DF00000006', '1804101300', 12.33, 23.22, 81);
 
 insert cdr_data(site_number, report_time, deepness, temperature, battery_level)
-values('DF00000006', '1804261500', 23.33, 23.22, 81);
+values('DF00000006', '1804151500', 22.33, 23.22, 81);
 
 insert cdr_data(site_number, report_time, deepness, temperature, battery_level)
-values('DF00000006', '1804261100', 23.33, 23.22, 81);
+values('DF00000006', '18042121100', 77.33, 23.22, 81);
+
+
+, min(deepness), min(temperature),avg(deepness), avg(temperature)
+select max(deepness), max(temperature)
+from cdr_data_full
+where hole_number='Z12' and report_time like '201804%'order by report_time limit 10;
+
+
+select max(deepness), max(temperature), min(deepness), min(temperature), avg(deepness), avg(temperature), min(battery_level), geological,hole_elevation 
+from cdr_data_full  
+where hole_number='Z12' and report_time like '2018-04%'
+
+
+
+select max(deepness), 
+		max(hole_elevation-deepness), 
+		max(temperature), 
+		min(deepness), 
+		min(hole_elevation-deepness), 
+		min(temperature), 
+		round(avg(deepness), 3), 
+		round(avg(hole_elevation-deepness), 3), 
+		round(avg(temperature), 3), 
+		min(battery_level) 
+from cdr_data_full  
+where report_time>'20180414223835' and report_time < '20180514223835' and hole_number='Z12'
 
 
 

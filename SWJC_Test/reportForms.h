@@ -5,16 +5,16 @@
 #include <QDate>
 #include <QFileDialog>
 #include <QLineSeries>
-#include <QChart>
-#include <QValueAxis>
-#include <QChartView>
+//#include <QChart>
+//#include <QValueAxis>
+//#include <QChartView>
 
 #include "common/comm.h"
 #include "common/mymysql.h"
 #include "common/qword.h"
 #include "common/qcustomplot.h"
 
-using namespace QtCharts;
+//using namespace QtCharts;
 
 
 class printFormsThread : public QThread
@@ -45,7 +45,7 @@ protected:
 signals:
     void resultReady(int value);
 private:
-    printFormsDemo();
+    void printFormsDemo();
 
     QString m_strHoleNumber;
     QString m_strDate;
