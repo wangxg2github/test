@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QDate>
 #include <QFileDialog>
-#include <QLineSeries>
+//#include <QLineSeries>
 //#include <QChart>
 //#include <QValueAxis>
 //#include <QChartView>
@@ -105,8 +105,6 @@ private:
     QString strMinBattery;
     QString strGeological;
     QString strHoleElevation;
-
-    QChartView *m_chartView;
 
     void customPlotInit();
     void printReportForms();

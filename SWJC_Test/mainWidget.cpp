@@ -50,7 +50,8 @@ void mainWidget::setMySqlDB(mymysql *mySqlDB)
 {
     if (mySqlDB == NULL)
     {
-        printLog(LOG_ERROR, "mysql db is null!");
+        qCritical("mysql db is null!");
+        //printLog(LOG_ERROR, "mysql db is null!");
         return;
     }
     m_mysqlDB = mySqlDB;
@@ -369,7 +370,8 @@ void mainWidget::settingInit()
 
             if (-1 == m_mysqlDB->sql_exec(strSql.toUtf8().data()))
             {
-                printLog(LOG_ERROR, "Add information of site failed! strSql:%s.", strSql.toUtf8().data());
+                qCritical("Add information of site failed! strSql:%s.", strSql.toUtf8().data());
+                //printLog(LOG_ERROR, "Add information of site failed! strSql:%s.", strSql.toUtf8().data());
                 return;
             }
 
@@ -654,7 +656,8 @@ void mainWidget::queryDataFromDB()
         QList<QList<QVariant>> datas;
         if (-1 == m_mysqlDB->sql_open(strSql.toLatin1().data(), datas))
         {
-            printLog(LOG_ERROR, "Query data from mysql failed! strSql:%s", strSql.toLatin1().data());
+            qCritical("Query data from mysql failed! strSql:%s", strSql.toLatin1().data());
+            //printLog(LOG_ERROR, "Query data from mysql failed! strSql:%s", strSql.toLatin1().data());
             return;
         }
         if (1 == datas.size() && 10 == datas.at(0).size())
@@ -742,9 +745,7 @@ void mainWidget::on_toolBtnAll_clicked()
         reportForms report(m_mysqlDB);
         if(QDialog::Accepted == report.exec())
         {
-            cout << "accept";
             QMessageBox::information(this, "报表打印", "报表打印成功！", QMessageBox::Accepted);
-
         }
     }
     else if (name == "退出系统")
@@ -767,7 +768,7 @@ void mainWidget::on_pushBtn_exportExcel_clicked()
     QFile csvFile(csvFilePath);
     if(!csvFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printLog(LOG_ERROR, "open file of csv failed! file path:%s.", csvFilePath);
+        printLog(LOG_ERROR, "open file of csv failed! file path:%s.", csvFilePath.toLatin1().data());
         return;
     }
 
@@ -787,7 +788,8 @@ void mainWidget::on_pushBtn_exportExcel_clicked()
         outStream << "\n";
     }
     csvFile.close();
-    printLog(LOG_INFO, "save file of csv successed.");
+    qInfo("Save file of csv successed.");
+    //printLog(LOG_INFO, "save file of csv successed.");
     return;
 }
 
@@ -876,7 +878,8 @@ void mainWidget::showData(QTableView *tableView, QMyModel *myModel, QList<QList<
 
     if(-1 == m_mysqlDB->sql_open(strSql.toLatin1().data(), *data))
     {
-        printLog(LOG_ERROR, "Query data of real failed! strSql:%s.", strSql.toLatin1().data());
+        qCritical("Query data of real failed! strSql:%s.", strSql.toLatin1().data());
+        //printLog(LOG_ERROR, "Query data of real failed! strSql:%s.", strSql.toLatin1().data());
         return;
     }
 

@@ -10,8 +10,7 @@ comObject::comObject(serialPortParam param)
         printLog(LOG_ERROR,"connect mysql db failed!");
     }
     printLog(LOG_INFO, "connect mysql db successed.");
-
-
+    return;
 }
 
 comObject::~comObject()
@@ -82,17 +81,15 @@ void comObject::init()
         emit signalString(SIGNAL_AT_CONNECT_ERROR);
         return;
     }
-
+    sendAtCmd(3);
 
     m_timerPolling  = new QTimer(this);
-    m_timerPolling->start(1000*30);
+    m_timerPolling->start(1000*5);
     connect(m_timerPolling, &QTimer::timeout, this,
             [=]()
     {
         sendAtCmd(8);
     });
-    sendAtCmd(3);
-
     return;
 }
 
@@ -111,7 +108,6 @@ void comObject::on_slot_readMycom()
     QByteArray temp = myCom->readAll();
     m_qStrRecvDataAll.append(temp.data());
 
-
     if (m_qStrRecvData.contains("ERROR"))
     {
         emit signalString(SIGNAL_AT_CONNECT_ERROR);
@@ -125,18 +121,17 @@ void comObject::on_slot_readMycom()
     }
     indexOfOneData += 2;
     m_qStrRecvData = m_qStrRecvDataAll.left(indexOfOneData);
-    m_qStrRecvDataAll = m_qStrRecvDataAll.right(m_qStrRecvDataAll.size()-indexOfOneData);
+    m_qStrRecvDataAll = m_qStrRecvDataAll.right(m_qStrRecvDataAll.size() - indexOfOneData);
 
-
+    //设置短信格式
     if (m_qStrRecvData.contains("OK") && m_qStrRecvData.contains("CMGF"))
     {
         emit signalString(SIGNAL_AT_CONNECT_OK);
         emit signalString(SIGNAL_UPDATE_DATA);
-        cout << "Recv Data:" << m_qStrRecvData;
         m_qStrRecvData.clear();
     }
 
-    //读取短信
+    //读取一条短信，命令字+索引号
     else if (m_qStrRecvData.contains("OK") && m_qStrRecvData.contains("CMGR"))
     {
         parseDataFromSerialPort();
@@ -146,9 +141,7 @@ void comObject::on_slot_readMycom()
     //读取所有短信 Cmd:8
     else if(m_qStrRecvData.contains("OK") && m_qStrRecvData.contains("CMGL"))
     {
-        //cout << "Recv Data:" << m_qStrRecvData;
         parseAllSmsFromSerialPort();
-        //printLog(LOG_ERROR, "recv msg:%s", m_qStrRecvData.toLatin1().data());
         m_qStrRecvData.clear();
         emit signalString(SIGNAL_UPDATE_DATA);
     }
@@ -192,7 +185,7 @@ int comObject::sendAtCmd(int index, int smsCount)
             qStrCmd= "AT+CMGF=1\r";
             break;
         case 4:
-            //读取短信
+            //读取一条短信，命令字+索引号
             qStrCmd= QString("AT+CMGR=%1\r").arg(smsCount);
             break;
         case 5:
@@ -234,7 +227,7 @@ void comObject::parseDataFromSerialPort()
 {
     printLog(LOG_ERROR, "%s.", m_qStrRecvData.toLatin1().data());
 
-    int iStatusNum = m_qStrRecvData.indexOf("REC", 12);
+    int iStatusNum = m_qStrRecvData.indexOf("REC UNREAD", 12);
     if(-1 != iStatusNum)
     {
         int iPhoneNum1 = m_qStrRecvData.indexOf(",\"", iStatusNum);
@@ -275,7 +268,7 @@ void comObject::parseSmsCountFromSerialPort()
     QStringList valueList = m_qStrRecvData.mid(flagIndexOFCount1 + 6, flagIndexOFCount2 - flagIndexOFCount1-6).split(",");
     cout << valueList;
 
-    for(int index = 0; index < valueList.size(); index+3)
+    for(int index = 0; index < valueList.size(); (index+3))
     {
         if(0 == index && ("\"MT\"" == valueList.at(index) || "\"ME\"" == valueList.at(index) || "\"SM\"" == valueList.at(index)))
         {
@@ -300,12 +293,12 @@ void comObject::parseAllSmsFromSerialPort()
     QStringList allSmsList = m_qStrRecvData.split("+CMGL: ");
     foreach (QString strOneSms, allSmsList)
     {
-        int iStatusNum = strOneSms.indexOf("REC READ");
+        int iStatusNum = strOneSms.indexOf("REC UNREAD");
         if(-1 != iStatusNum)
         {
             m_smsInfo.clear();
 
-//            QString index = strOneSms.left(strOneSms.indexOf(","));
+            //获取手机号码前后所处索引值
             int iPhoneNum1 = strOneSms.indexOf(",\"", iStatusNum);
             int iPhoneNum2 = strOneSms.indexOf("\",", iPhoneNum1);
             if (-1 == iPhoneNum1 || -1 == iPhoneNum2)
@@ -315,6 +308,7 @@ void comObject::parseAllSmsFromSerialPort()
             }
             m_smsInfo.strPhoneNum = strOneSms.mid(iPhoneNum1+2, iPhoneNum2-iPhoneNum1-2);
 
+            //获取短信接收事件前后索引值
             int iTimeNum1 = strOneSms.indexOf(",\"", iPhoneNum2);
             int iTimeNum2 = strOneSms.indexOf("\"\r\n", iTimeNum1);
             if (-1 == iTimeNum1 || -1 == iTimeNum2)
@@ -324,15 +318,17 @@ void comObject::parseAllSmsFromSerialPort()
             }
             m_smsInfo.strTime = strOneSms.mid(iTimeNum1+2, iTimeNum2-iTimeNum1-2);
 
-            int iSmsEndNum = strOneSms.indexOf("\r\n", iTimeNum2+3);
+            //获取短信前后符索引值
+            int iSmsStartNum = iTimeNum2 + 3;
+            int iSmsEndNum = strOneSms.indexOf("\r\n", iSmsStartNum);
 
             //短信固定长度 138
-            if((strOneSms.size()-iTimeNum2-2-3) < (iSmsEndNum-iTimeNum2-3))
+            if((strOneSms.size()-iSmsStartNum-2) < (iSmsEndNum - iSmsStartNum))
             {
                 printLog(LOG_ERROR, "The length of text messages is not equal to 138!");
                 return;
             }
-            m_smsInfo.strSms = strOneSms.mid(iTimeNum2+3, 138);
+            m_smsInfo.strSms = strOneSms.mid(iSmsStartNum, 138);
 
             parseSmsData();
 
@@ -405,9 +401,7 @@ void comObject::parseSmsData()
 
             m_siteData.iTemperature =  strTmpData.toFloat() / 100;
 
-
-
-            printLog(LOG_INFO, "siteNum:%s, time:%s, depth:%f, temperature:%f, battery:%f.", m_siteData.strSiteNum.toLatin1().data(),
+            printLog(LOG_DEBUG, "siteNum:%s, time:%s, depth:%f, temperature:%f, battery:%f.", m_siteData.strSiteNum.toLatin1().data(),
                      m_siteData.strTime.toLatin1().data(), m_siteData.iDepth, m_siteData.iTemperature, m_siteData.iBattery);
 
             insertDataToMysql();
@@ -421,12 +415,12 @@ void comObject::insertDataToMysql()
 {
     QString strSql = QString("insert cdr_data(site_number, report_time, deepness, temperature, battery_level) values('%1', '%2', %3, %4, %5);").arg(m_siteData.strSiteNum).arg(m_siteData.strTime).arg(m_siteData.iDepth).arg(m_siteData.iTemperature).arg(m_siteData.iBattery);
 
-    //printLog(LOG_INFO, "inset data failed! strSql:%s", strSql.toUtf8().data());
+    printLog(LOG_DEBUG, "inset data failed! strSql:%s", strSql.toUtf8().data());
 
 
     if (-1 == m_mysqlDB->sql_exec(strSql.toUtf8().data()))
     {
         printLog(LOG_ERROR, "inset data failed! strSql:%s", strSql.toUtf8().data());
     }
-
+    return;
 }

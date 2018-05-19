@@ -7,7 +7,7 @@ st_logger::st_logger(QObject *parent) :
     m_pLogFile          = NULL;
     m_bUseLogFile       = true;
     m_nLogLevel         = LOG_INFO;
-    m_nMaxFileSize      = 50*1024*1024; //50M
+    m_nMaxFileSize      = 1024; //10*1024*1024; //10M
 }
 
 
@@ -43,12 +43,31 @@ bool st_logger::CreateNewLogFile(QCoreApplication * app)
 {
     bool res = false;
     QDateTime dtmCur = QDateTime::currentDateTime();
-    m_currLogFileName = app->applicationDirPath() + "/log/";// + dtmCur.toString("yyyy_MM") + "/";
+    m_currLogFileName = app->applicationDirPath() + "/log/";
 
-    QDir dir;
-    dir.mkpath(m_currLogFileName);
-    m_currLogFileName += dtmCur.toString("yyyyMMddhhmmss_");
-    m_currLogFileName += /*app->applicationName() + */QString("(%1).log").arg(app->applicationPid());
+    QDir dir(m_currLogFileName);
+    if(!dir.exists())
+    {
+        dir.mkpath(m_currLogFileName);
+    }
+
+    QFileInfoList fileList = dir.entryInfoList();
+    if (fileList.size() >= 10)
+    {
+        foreach (QFileInfo file, fileList)
+        {
+            if (file.fileName() == "." || file.fileName() == "..")
+            {
+                continue;
+            }
+            else
+            {
+                QFile remove(file.fileName());
+                remove.remove();
+                break;
+            }
+        }
+    }
 
     if (NULL != m_pLogFile)
     {
@@ -60,6 +79,7 @@ bool st_logger::CreateNewLogFile(QCoreApplication * app)
         m_pLogFile = NULL;
     }
 
+    m_currLogFileName += dtmCur.toString("yyyyMMddhhmmss_") +QString("(%1).log").arg(app->applicationPid());
     m_pLogFile = new QFile(m_currLogFileName, this);
     if (NULL != m_pLogFile)
     {

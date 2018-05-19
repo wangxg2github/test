@@ -27,7 +27,9 @@ int main(int argc, char *argv[])
     {
         printLog(LOG_ERROR,"connect mysql db failed!");
     }
-    printLog(LOG_INFO, "connect mysql db successed.");
+
+    for(int i = 0 ; i < 1000 ; ++i)
+        printLog(LOG_INFO, "connect mysql db successed.");
 
 
     //login system

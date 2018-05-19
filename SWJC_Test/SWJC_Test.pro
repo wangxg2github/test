@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml charts axcontainer
+QT       += core gui xml axcontainer
 #CONFIG += qaxcontainer
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -38,7 +38,8 @@ SOURCES += main.cpp \
     equipmentDialog.cpp \
     reportForms.cpp \
     common/qword.cpp \
-    common/qcustomplot.cpp
+    common/qcustomplot.cpp \
+    settingDialog.cpp
 
 HEADERS  += \
     mainWidget.h \
@@ -52,15 +53,17 @@ HEADERS  += \
     module/serialPort/qextserialbase.h \
     module/serialPort/win_qextserialport.h \
     equipmentDialog.h \
-    common/commdata.h \
     reportForms.h \
     common/qword.h \
-    common/qcustomplot.h
+    common/qcustomplot.h \
+    common/myHelper.h \
+    settingDialog.h
 
 FORMS    += \
     mainWidget.ui \
     equipmentDialog.ui \
-    reportForms.ui
+    reportForms.ui \
+    settingDialog.ui
 
 RESOURCES += \
     image.qrc \

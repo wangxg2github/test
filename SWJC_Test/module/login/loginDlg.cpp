@@ -64,6 +64,7 @@ void LoginDlg::setMysqlDB(mymysql* mysqlDB)
     if(NULL == mysqlDB)
     {
         printLog(LOG_ERROR, "mysql db is null!");
+        return;
     }
     m_mysqlDB = mysqlDB;
     return;
