@@ -10,6 +10,9 @@
 #include <QAxObject>
 #include <QAxWidget>
 
+#include "common/comm.h"
+//#include "qt_windows.h"
+
 class QWord : public QObject
 {
     Q_OBJECT

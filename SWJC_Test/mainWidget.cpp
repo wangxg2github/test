@@ -531,7 +531,7 @@ void mainWidget::threadStart()
 
     //serialPort thread
     m_comObject = new comObject(serialPortParamTmp);
-    m_comThread = new QThread();
+    m_comThread = new QThread(this);
     m_comObject->moveToThread(m_comThread);
 
     connect(m_comThread, &QThread::started, m_comObject, &comObject::init);
@@ -601,8 +601,9 @@ void mainWidget::threadDestroy()
     if (m_comThread)
     {
         m_comThread->quit();
+        m_comThread->wait();
     }
-    m_comThread->wait();
+
     m_comThread = NULL;
     m_comObject = NULL;
 

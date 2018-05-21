@@ -23,6 +23,7 @@ reportForms::reportForms(mymysql *mysqlDB) :
         printLog(LOG_ERROR, "pararm of mysql db is null!");
         return;
     }
+    printLog(LOG_INFO, "OK!");
 
     m_mysqlDB = mysqlDB;
     QString filenameTmp = QApplication::applicationDirPath() + QDateTime::currentDateTime().toString("/yyyyMMddhhmmss");
@@ -196,6 +197,20 @@ where hole_number='%1' and report_time like '%2%'order by report_time;").arg(ui-
         {
             return accept();
         }
+    });
+    connect(workerThread, &printFormsThread::resultString, this,
+            [=](QString qStrMsg)
+    {
+        QStringList qStrMsgList = qStrMsg.split("：");
+        if(2 == qStrMsgList.size())
+        {
+            if(QMessageBox::Yes == QMessageBox::question(this, qStrMsgList.at(0), qStrMsgList.at(1), QMessageBox::Yes))
+            {
+                close();
+            }
+        }
+
+        return;
     });
     // 线程结束后，自动销毁
     connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
@@ -518,21 +533,23 @@ printFormsThread::printFormsThread(QString strHoleNumber,
     m_strHoleElevation = strHoleElevation;
 
     m_datas = datas;
-
-    qDebug() << "Worker Run Thread : " << QThread::currentThreadId();
+    return;
 }
 
 void printFormsThread::run()
 {
-    qDebug() << "Worker Run Thread : " << QThread::currentThreadId();
     printFormsDemo();
-
+    return;
 }
 
 void printFormsThread::printFormsDemo()
 {
     QWord word;
-    word.createNewWord(m_filePathOfWord);
+    if(false == word.createNewWord(m_filePathOfWord))
+    {
+        emit resultString(word.getStrErrorInfo());
+        return;
+    }
     emit resultReady(15);
 
     word.setFontSize(18);				//字体大小

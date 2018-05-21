@@ -19,18 +19,12 @@ int main(int argc, char *argv[])
     //注册日志接口函数
     qInstallMessageHandler(stMessageOutput);
 
-    g_logger.setLogLevel(LOG_INFO);
-
     //连接数据库
     mymysql mysqlDB;
     if (-1 == mysqlDB.sql_connect("127.0.0.1", "root", "", "mydata"))
     {
         printLog(LOG_ERROR,"connect mysql db failed!");
     }
-
-    for(int i = 0 ; i < 1000 ; ++i)
-        printLog(LOG_INFO, "connect mysql db successed.");
-
 
     //login system
     LoginDlg loginSys;

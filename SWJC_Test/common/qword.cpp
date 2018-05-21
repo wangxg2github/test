@@ -19,12 +19,15 @@ QWord::~QWord()
 
 bool QWord::createNewWord()		//创建一个新的word
 {
+    printLog(LOG_ERROR, "File name already exists!");
+
     QString defaultFileName = "报表文件" + QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
     m_saveName = QFileDialog::getSaveFileName(0, "LogInfo", defaultFileName, "*.doc");
     QFile file(m_saveName);
     if(file.exists())
     {
         m_strError += "错误：目标文件已存在!";
+        printLog(LOG_ERROR, "File name already exists!");
         return false;
     }
     if(!m_saveName.isEmpty())
@@ -39,6 +42,9 @@ bool QWord::createNewWord()		//创建一个新的word
         m_documents = m_word->querySubObject("Documents");
         m_documents->dynamicCall("Add (void)");
         m_document = m_word->querySubObject("ActiveDocument");//获取当前激活的文档
+
+        printLog(LOG_ERROR, "获取word组件失败，请确定是否安装了word!");
+        qDebug() << "获取word组件失败，请确定是否安装了word!";
         return true;
     }else
     {
@@ -57,6 +63,7 @@ bool QWord::createNewWord(const QString& filePath )
     }
     if(!m_saveName.isEmpty())
     {
+        //OleUninitialize();
         if(!m_word->setControl("Word.Application"))
         {
             m_strError += "错误：获取word组件失败，请确定是否安装了word!\n";

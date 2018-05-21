@@ -44,6 +44,7 @@ protected:
 
 signals:
     void resultReady(int value);
+    void resultString(QString qStrMsg);
 private:
     void printFormsDemo();
 

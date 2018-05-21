@@ -84,7 +84,7 @@ void comObject::init()
     sendAtCmd(3);
 
     m_timerPolling  = new QTimer(this);
-    m_timerPolling->start(1000*5);
+    m_timerPolling->start(1000*60);
     connect(m_timerPolling, &QTimer::timeout, this,
             [=]()
     {
@@ -414,9 +414,6 @@ void comObject::parseSmsData()
 void comObject::insertDataToMysql()
 {
     QString strSql = QString("insert cdr_data(site_number, report_time, deepness, temperature, battery_level) values('%1', '%2', %3, %4, %5);").arg(m_siteData.strSiteNum).arg(m_siteData.strTime).arg(m_siteData.iDepth).arg(m_siteData.iTemperature).arg(m_siteData.iBattery);
-
-    printLog(LOG_DEBUG, "inset data failed! strSql:%s", strSql.toUtf8().data());
-
 
     if (-1 == m_mysqlDB->sql_exec(strSql.toUtf8().data()))
     {

@@ -6,8 +6,8 @@ st_logger::st_logger(QObject *parent) :
 {
     m_pLogFile          = NULL;
     m_bUseLogFile       = true;
-    m_nLogLevel         = LOG_INFO;
-    m_nMaxFileSize      = 1024; //10*1024*1024; //10M
+    m_nLogLevel         = LOG_WARN;
+    m_nMaxFileSize      = 10*1024*1024; //10M
 }
 
 
@@ -62,7 +62,7 @@ bool st_logger::CreateNewLogFile(QCoreApplication * app)
             }
             else
             {
-                QFile remove(file.fileName());
+                QFile remove(m_currLogFileName + file.fileName());
                 remove.remove();
                 break;
             }
